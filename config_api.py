@@ -1,69 +1,157 @@
 import requests
-import jsonpath
 import json
 # from assertpy import assert_that
-from ast import literal_eval
 from random import randint
+from pathlib import Path
 
 BASE_URL = "https://simple-books-api.glitch.me"
+CURRENT_DIR = str(Path.cwd())
+PATH_TO_ACCESS_TOKEN = CURRENT_DIR + '\\access_token.txt'
+PATH_TO_USER_DATA = CURRENT_DIR + '\\current_user_data.txt'
 
 
-def get_api_status():
-    response = requests.get(f"{BASE_URL}/status")
-
-    json_response = json.loads(response.text)
-    print(json_response)
-
-    status_text = jsonpath.jsonpath(json_response, 'status')
-    print(status_text[0])
+def api_status():
+    """Returns the request response for get api status"""
+    response_status_api = requests.get(f"{BASE_URL}/status")
+    return response_status_api
 
 
 def get_all_books():
-    response = requests.get(f"{BASE_URL}/books")
-    json_response = json.loads(response.text)
-    print(json_response)
+    """Returns the request response for get all books"""
+    response_get_all_books = requests.get(f"{BASE_URL}/books")
+    return response_get_all_books
 
 
-def create_random_user_data():
+def get_one_book(book_id):
+    """Returns the request response for get one book by id"""
+    response_get_one_book = requests.get(f"{BASE_URL}/books/{book_id}")
+    return response_get_one_book
+
+
+def get_filter_books(book_type, limit=10):
+    """Returns the request response for get one books using filter like type and limit"""
+    params = {
+        "type": book_type,
+        "limit": limit
+    }
+    response = requests.get(url=f"{BASE_URL}/books", params=params)
+    return response  # json.loads(response.text)
+
+
+def order_a_book(book_id):
+    """Returns the request response for create a new order"""
+    with open(PATH_TO_USER_DATA, "r") as customer_info:
+        customer_name = json.load(customer_info)["clientName"]
+
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+
+    payload = {
+        "bookId": book_id,
+        "customerName": customer_name
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+
+    response = requests.post(url=f'{BASE_URL}/orders', json=payload, headers=headers)
+    return response
+
+
+def get_all_orders():
+    """Returns the request response for get all the orders"""
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": token
+    }
+
+    response = requests.get(url=f'{BASE_URL}/orders', headers=headers)
+    return response
+
+
+def get_a_specific_order(order_id):
+    """Returns the request response for get a specific order by id"""
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+    headers = {
+        "Authorization": token,
+    }
+
+    response = requests.get(url=f'{BASE_URL}/orders/{order_id}', headers=headers)
+    return response
+
+
+def update_order_customer_name(order_id, new_name):
+    """Returns the request response for update a order customer name"""
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+    headers = {
+        "Authorization": token,
+    }
+
+    json_body = {
+        "customerName": new_name,
+    }
+    response = requests.patch(url=f'{BASE_URL}/orders/{order_id}', headers=headers, json=json_body)
+    return response
+
+
+def delete_a_specific_order(order_id):
+    """Returns the request response for delete an order by id"""
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+    headers = {
+        "Authorization": token,
+    }
+    response = requests.delete(url=f'{BASE_URL}/orders/{order_id}', headers=headers)
+    return response
+
+
+def create_new_user_data():
     """Create a random user and save data in current_user_data.txt"""
     random = randint(0, 1000)  # range can be increase
     user = {
-        "clientName": "Adrian",
+        "clientName": f"Adrian{random}",
         "clientEmail": f"adrianmacovei{random}@gmail.com"
     }
-    with open('current_user_data.txt', 'w') as user_data:
-        user_data.write(str(user))
+    with open(f'{PATH_TO_USER_DATA}', 'w') as user_data:
+        json.dump(user, user_data, indent=4)
 
 
 def take_user_data():
     """Take current user data from current_user_data.txt and return it into dict/object format"""
-    create_random_user_data()
-    with open('current_user_data.txt', 'r') as user_data:
-        user_data = literal_eval(user_data.read())
-        return user_data
+    with open(PATH_TO_USER_DATA, 'r') as user_data:
+        return json.loads(user_data.read())
 
 
 def api_authentication():
-    """ If user is uniq save token in access_token.txt, else return json_return for testing purposes"""
-    json_send_data = take_user_data()
-    response = requests.post(url=f"{BASE_URL}/api-clients", json=json_send_data)
-    json_response = json.loads(response.text)
-    with open('access_token.txt', 'w') as access_token:
-        if "accessToken" in json_response:
-            access_token.write(response.text)
-        else:
-            print(json_response)
-            return json_response
+    """Save token in access_token.txt if user is new and return response, else return response for testing purposes"""
+    response_api_auth = requests.post(url=f"{BASE_URL}/api-clients", json=take_user_data())
+    json_response = json.loads(response_api_auth.text)
+    if "accessToken" in json_response:
+        with open(PATH_TO_ACCESS_TOKEN, 'w') as access_token:
+            # if accessToken in json_response than save the value of token in access_token.txt in str format
+            access_token.write(str(json_response["accessToken"]))
+            return response_api_auth
+    else:
+        return response_api_auth
 
 
 def get_access_token():
-    """Returns the access token but before transform text from access_token.txt in dict, access value of key
-    accessToken and save it in token_access variable"""
+    """Return access token string value"""
 
-    with open('access_token.txt', 'r') as access_token:
-        token_access = literal_eval(access_token.read())['accessToken']
+    with open(PATH_TO_ACCESS_TOKEN, 'r') as access_token:
+        token_access = access_token.read()
         return token_access
 
-api_authentication()
-TOKEN = get_access_token()
-print(TOKEN)
+
+def delete_token():
+    """Delete access token for testing purposes"""
+    file = open(PATH_TO_ACCESS_TOKEN, 'w')
+    file.close()
+
