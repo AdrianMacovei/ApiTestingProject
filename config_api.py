@@ -87,7 +87,7 @@ def get_a_specific_order(order_id):
 
 
 def update_order_customer_name(order_id, new_name):
-    """Returns the request response for update a order customer name"""
+    """Returns the request response for update an order customer name"""
     with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
         token = access_token.read()
     headers = {
@@ -155,3 +155,22 @@ def delete_token():
     file = open(PATH_TO_ACCESS_TOKEN, 'w')
     file.close()
 
+
+def change_order_data(order_id, param, new_param):
+    """Returns the request response for patch/update order attribute"""
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+    headers = {
+        "Authorization": token,
+    }
+
+    json_body = {
+        param: new_param,
+    }
+    response = requests.patch(url=f'{BASE_URL}/orders/{order_id}', headers=headers, json=json_body)
+    return response
+
+def delete_a_book(book_id):
+    """Try to delete book and return response"""
+    response_delete_book = requests.delete(f"{BASE_URL}/books/{book_id}")
+    return response_delete_book
