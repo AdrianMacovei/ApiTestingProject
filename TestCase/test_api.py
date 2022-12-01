@@ -29,12 +29,16 @@ class TestApi:
         api_authentication()
 
     @pytest.fixture
-    def delete_and_rollback_auth_token(self):
+    def rollback_auth_token(self):
         token = get_access_token()
-        delete_token()
         yield
         with open(PATH_TO_ACCESS_TOKEN, 'w') as access_token:
             access_token.write(token)
+
+    @pytest.fixture
+    def make_orders(self):
+        for _ in range(3):
+            order_a_book(3)
 
 
     def test_api_initial_status(self):
@@ -72,7 +76,7 @@ class TestApi:
 
 
 
-    def test_order_an_available_book(self):
+    def test_order_available_book(self):
         all_books = get_all_books().json()
         for book in all_books:
             if book['available']:
@@ -140,7 +144,7 @@ class TestApi:
         assert_that(response.status_code).is_equal_to(400)
         assert_that(response.json()).contains_value('Invalid or missing bookId.')
 
-    def test_try_change_order_id(self):
+    def test_try_change_order_id(self, make_orders):
         new_id = "sds45353sda553454"
         order_id = get_all_orders().json()[0]['id']
         response = change_order_data(order_id, "id", new_id)
@@ -151,7 +155,7 @@ class TestApi:
             assert_that(response.json()).contains_key('error')
         # this should receive a 4xx status, receive 204 no response, but the order with new_id can't be found
 
-    def test_change_order_quantity(self):
+    def test_change_order_quantity(self, make_orders):
         new_quantity = 4
         order_id = get_all_orders().json()[0]['id']
         response = change_order_data(order_id, "quantity", new_quantity)
@@ -162,7 +166,7 @@ class TestApi:
             assert_that(response.json()).contains_key('error')
         # this should receive a 4xx status, receive 204 no response, but the order still have quantity 1
 
-    def test_delete_an_already_deleted_order(self):
+    def test_delete_an_already_deleted_order(self, make_orders):
         order_id = get_all_orders().json()[0]['id']
         delete_a_specific_order(order_id)
         response = delete_a_specific_order(order_id)
@@ -203,24 +207,21 @@ class TestApi:
         # name should be only string format but accept integer format too
 
 
-    def test_get_all_orders_no_auth_token(self, delete_and_rollback_auth_token):
+    def test_get_all_orders_no_auth_token(self, rollback_auth_token):
+        delete_token()
         orders = get_all_orders()
         assert_that(orders.status_code).is_equal_to(401)
         assert_that(orders.json()).contains_value('Invalid bearer token.')
 
-    def test_update_order_no_auth_token(self, authenticate_with_new_data):
-        order_id = get_all_orders().json()
+    def test_update_order_no_auth_token(self, rollback_auth_token):
+        order_id = get_all_orders().json()[0]['id']
         new_name = "Someone"
-
         delete_token()
         response = update_order_customer_name(order_id, new_name)
         assert_that(response.status_code).is_equal_to(401)
         assert_that(response.json()).contains_value('Invalid bearer token.')
 
-    def test_delete_an_order_no_auth_token(self, authenticate_with_new_data):
-        # create_new_user_data()
-        # api_authentication()
-        order_a_book(3)
+    def test_delete_an_order_no_auth_token(self, rollback_auth_token):
         order_id = get_all_orders().json()[0]['id']
         delete_token()
         response = delete_a_specific_order(order_id)
