@@ -1,3 +1,5 @@
+import pytest
+
 from config_api import *
 from assertpy import assert_that
 from cerberus import Validator
@@ -10,24 +12,50 @@ class TestApi:
     ORDER_SCHEMA = dict(id={'type': 'string'}, bookId={'type': "integer"}, customerName={'type': 'string'},
                         createdBy={'type': 'string'}, quantity={'type': 'integer'}, timestamp={'type': 'integer'})
 
+
+    @pytest.fixture
+    def validate_book_schema(self):
+        v = Validator(TestApi.BOOK_SCHEMA)
+        return v.validate
+
+    @pytest.fixture
+    def validate_order_schema(self):
+        v = Validator(TestApi.ORDER_SCHEMA)
+        return v.validate
+
+    @pytest.fixture
+    def authenticate_with_new_data(self):
+        create_new_user_data()
+        api_authentication()
+
+    @pytest.fixture
+    def delete_and_rollback_auth_token(self):
+        token = get_access_token()
+        delete_token()
+        yield
+        with open(PATH_TO_ACCESS_TOKEN, 'w') as access_token:
+            access_token.write(token)
+
+
     def test_api_initial_status(self):
         assert_that(api_status().status_code).is_equal_to(200)
         assert_that(api_status().json()['status']).is_equal_to('OK')
 
-    def test_get_all_books_response(self):
+    def test_api_authentication_with_new_user_data(self):
+        create_new_user_data()
+        response = api_authentication()
 
-        v = Validator(TestApi.BOOK_SCHEMA)
+        assert_that(response.status_code).is_equal_to(201)
+        assert_that(response.json()).contains_key("accessToken")
 
+    def test_get_all_books_response(self, validate_book_schema):
         assert_that(get_all_books().status_code).is_equal_to(200)
-        assert_that(v.validate(get_all_books().json()[0])).is_equal_to(True)
+        assert_that(validate_book_schema(get_all_books().json()[0])).is_equal_to(True)
         assert_that(get_all_books().json()[0]['name']).is_equal_to("The Russian")
 
-    def test_get_filter_books_correct_parameters(self):
-
-        v = Validator(TestApi.BOOK_SCHEMA)
-
+    def test_get_filter_books_correct_parameters(self, validate_book_schema):
         assert_that(get_filter_books("fiction").status_code).is_equal_to(200)
-        assert_that(v.validate(get_filter_books("fiction").json()[0])).is_equal_to(True)
+        assert_that(validate_book_schema(get_filter_books("fiction").json()[0])).is_equal_to(True)
 
         book_type = ['fiction', 'non-fiction']
         for book_type in book_type:
@@ -42,12 +70,7 @@ class TestApi:
         assert_that(get_one_book(1).status_code).is_equal_to(200)
         assert_that(get_one_book(2).json()).contains_key("current-stock", "price")
 
-    def test_api_authentication_with_new_user_data(self):
-        create_new_user_data()
-        response = api_authentication()
 
-        assert_that(response.status_code).is_equal_to(201)
-        assert_that(response.json()).contains_key("accessToken")
 
     def test_order_an_available_book(self):
         all_books = get_all_books().json()
@@ -62,23 +85,17 @@ class TestApi:
         assert_that(response.status_code).is_equal_to(404)
         assert_that(response.json()).contains_value('This book is not in stock. Try again later.')
 
-    def test_get_all_orders(self):
-
-        v = Validator(TestApi.ORDER_SCHEMA)
-
+    def test_get_all_orders(self, validate_order_schema):
         orders = get_all_orders()
         assert_that(orders.status_code).is_equal_to(200)
+        assert_that(validate_order_schema(orders.json()[0])).is_equal_to(True)
 
-        assert_that(v.validate(orders.json()[0])).is_equal_to(True)
-
-    def test_get_one_order_by_id(self):
-        v = Validator(TestApi.ORDER_SCHEMA)
-
+    def test_get_one_order_by_id(self, validate_order_schema):
         order_id = get_all_orders().json()[0]['id']
         order = get_a_specific_order(order_id)
 
         assert_that(order.status_code).is_equal_to(200)
-        assert_that(v.validate(order.json())).is_equal_to(True)
+        assert_that(validate_order_schema(order.json())).is_equal_to(True)
         assert_that(order.json()['id']).is_equal_to(order_id)
 
     def test_update_order_customer(self):
@@ -99,44 +116,8 @@ class TestApi:
 
         assert_that(response.status_code).is_equal_to(204)
         assert_that(get_a_specific_order(order_id).json()).contains_value(message)
-
         # suggestion for dev to improve API
         # assert_that(response.content).is_not_empty()
-
-    def test_api_authentication_with_already_used_user_data(self):
-        response = api_authentication()
-        assert_that(response.status_code).is_equal_to(409)
-        assert_that(response.json()).contains_value('API client already registered. Try a different email.')
-
-    def test_get_all_orders_no_auth_token(self):
-        delete_token()
-        orders = get_all_orders()
-        assert_that(orders.status_code).is_equal_to(401)
-        assert_that(orders.json()).contains_value('Invalid bearer token.')
-
-    def test_update_order_no_auth_token(self):
-        create_new_user_data()
-        api_authentication()
-        order_id = get_all_orders().json()
-        new_name = "Someone"
-
-        delete_token()
-        response = update_order_customer_name(order_id, new_name)
-        assert_that(response.status_code).is_equal_to(401)
-        assert_that(response.json()).contains_value('Invalid bearer token.')
-
-    def test_delete_an_order_no_auth_token(self):
-        create_new_user_data()
-        api_authentication()
-        order_a_book(3)
-
-        order_id = get_all_orders().json()[0]['id']
-
-        delete_token()
-        response = delete_a_specific_order(order_id)
-
-        assert_that(response.status_code).is_equal_to(401)
-        assert_that(response.json()).contains_value('Invalid bearer token.')
 
     def test_get_a_book_with_unavailable_id(self):
         book_id = 100
@@ -147,6 +128,10 @@ class TestApi:
     def test_get_filter_books_incorrect_parameters(self):
         assert_that(get_filter_books("something").status_code).is_equal_to(400)
 
+    def test_get_filter_books_string_limit(self):
+        assert_that(get_filter_books("fiction", "something").status_code).is_equal_to(400)
+        # limit param accept string format and should not
+
     def test_order_an_nonexistent_book(self):
         create_new_user_data()
         api_authentication()
@@ -155,7 +140,7 @@ class TestApi:
         assert_that(response.status_code).is_equal_to(400)
         assert_that(response.json()).contains_value('Invalid or missing bookId.')
 
-    def test_change_order_id(self):
+    def test_try_change_order_id(self):
         new_id = "sds45353sda553454"
         order_id = get_all_orders().json()[0]['id']
         response = change_order_data(order_id, "id", new_id)
@@ -180,8 +165,8 @@ class TestApi:
     def test_delete_an_already_deleted_order(self):
         order_id = get_all_orders().json()[0]['id']
         delete_a_specific_order(order_id)
-
         response = delete_a_specific_order(order_id)
+
         assert_that(response.status_code).is_equal_to(404)
 
     def test_try_delete_a_book(self):
@@ -216,3 +201,34 @@ class TestApi:
         resp = authenticate(3424, f"something{random}@gmail.com")
         assert_that(resp.status_code).is_equal_to(400)
         # name should be only string format but accept integer format too
+
+
+    def test_get_all_orders_no_auth_token(self, delete_and_rollback_auth_token):
+        orders = get_all_orders()
+        assert_that(orders.status_code).is_equal_to(401)
+        assert_that(orders.json()).contains_value('Invalid bearer token.')
+
+    def test_update_order_no_auth_token(self, authenticate_with_new_data):
+        order_id = get_all_orders().json()
+        new_name = "Someone"
+
+        delete_token()
+        response = update_order_customer_name(order_id, new_name)
+        assert_that(response.status_code).is_equal_to(401)
+        assert_that(response.json()).contains_value('Invalid bearer token.')
+
+    def test_delete_an_order_no_auth_token(self, authenticate_with_new_data):
+        # create_new_user_data()
+        # api_authentication()
+        order_a_book(3)
+        order_id = get_all_orders().json()[0]['id']
+        delete_token()
+        response = delete_a_specific_order(order_id)
+
+        assert_that(response.status_code).is_equal_to(401)
+        assert_that(response.json()).contains_value('Invalid bearer token.')
+
+    def test_api_authentication_with_already_used_user_data(self):
+        response = api_authentication()
+        assert_that(response.status_code).is_equal_to(409)
+        assert_that(response.json()).contains_value('API client already registered. Try a different email.')

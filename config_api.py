@@ -114,7 +114,7 @@ def delete_a_specific_order(order_id):
 
 def create_new_user_data():
     """Create a random user and save data in current_user_data.txt"""
-    random = randint(0, 1000)  # range can be increase
+    random = randint(0, 10000)  # range can be increase
     user = {
         "clientName": f"Adrian{random}",
         "clientEmail": f"adrianmacovei{random}@gmail.com"
