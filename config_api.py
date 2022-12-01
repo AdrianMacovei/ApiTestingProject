@@ -176,7 +176,7 @@ def delete_a_book(book_id):
     return response_delete_book
 
 def delete_all_orders():
-    """Returns the request response for delete an order by id"""
+    """Returns the request response for try to delete all orders"""
     with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
         token = access_token.read()
     headers = {
@@ -184,3 +184,11 @@ def delete_all_orders():
     }
     response = requests.delete(url=f'{BASE_URL}/orders', headers=headers)
     return response
+
+def authenticate(client_name, client_email):
+    json_data = {
+        "clientName": client_name,
+        "clientEmail": client_email,
+    }
+    response_api_auth = requests.post(url=f"{BASE_URL}/api-clients", json=json_data)
+    return response_api_auth

@@ -192,10 +192,10 @@ class TestApi:
         book_stock = get_one_book(1).json()["current-stock"]
         current_number_of_orders = len(get_all_orders().json())
 
-        for _ in range(1, book_stock + 2):
-           response = order_a_book(1)
+        for _ in range(1, book_stock + 1):
+           order_a_book(1)
 
-
+        response = order_a_book(1)
         assert_that(len(get_all_orders().json())).is_equal_to(current_number_of_orders + book_stock + 1)
         assert_that(get_one_book(1).json()["current-stock"]).is_equal_to(0)
         assert_that(response.json()).contains_key("error")
@@ -205,3 +205,14 @@ class TestApi:
         response = delete_all_orders()
         assert_that(response.status_code).is_equal_to(404)
 
+    def test_authentication_with_invalid_email_format(self):
+        resp = authenticate("Bogdan", "sfsdafsa")
+
+        assert_that(resp.status_code).is_equal_to(400)
+        assert_that(resp.json()).contains_value('Invalid or missing client email.')
+
+    def test_authentication_with_number_value_in_name(self):
+        random = randint(0, 10000)
+        resp = authenticate(3424, f"something{random}@gmail.com")
+        assert_that(resp.status_code).is_equal_to(400)
+        # name should be only string format but accept integer format too
