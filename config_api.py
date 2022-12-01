@@ -174,3 +174,13 @@ def delete_a_book(book_id):
     """Try to delete book and return response"""
     response_delete_book = requests.delete(f"{BASE_URL}/books/{book_id}")
     return response_delete_book
+
+def delete_all_orders():
+    """Returns the request response for delete an order by id"""
+    with open(PATH_TO_ACCESS_TOKEN, "r") as access_token:
+        token = access_token.read()
+    headers = {
+        "Authorization": token,
+    }
+    response = requests.delete(url=f'{BASE_URL}/orders', headers=headers)
+    return response

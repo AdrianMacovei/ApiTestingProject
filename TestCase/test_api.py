@@ -184,7 +184,24 @@ class TestApi:
         response = delete_a_specific_order(order_id)
         assert_that(response.status_code).is_equal_to(404)
 
-    def test_delete_a_book(self):
+    def test_try_delete_a_book(self):
         response = delete_a_book(2)
+        assert_that(response.status_code).is_equal_to(404)
+
+    def test_order_a_book_more_than_available_number(self):
+        book_stock = get_one_book(1).json()["current-stock"]
+        current_number_of_orders = len(get_all_orders().json())
+
+        for _ in range(1, book_stock + 2):
+           response = order_a_book(1)
+
+
+        assert_that(len(get_all_orders().json())).is_equal_to(current_number_of_orders + book_stock + 1)
+        assert_that(get_one_book(1).json()["current-stock"]).is_equal_to(0)
+        assert_that(response.json()).contains_key("error")
+        # no change in current-stock when order books and when the current stock is exceeded no error appears
+
+    def test_try_delete_all_orders(self):
+        response = delete_all_orders()
         assert_that(response.status_code).is_equal_to(404)
 
