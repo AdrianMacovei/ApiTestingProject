@@ -192,3 +192,12 @@ def authenticate(client_name, client_email):
     }
     response_api_auth = requests.post(url=f"{BASE_URL}/api-clients", json=json_data)
     return response_api_auth
+
+def get_biggest_book_id():
+    """Find the biggest id book and return it"""
+    books = get_all_books().json()
+    max_id = 0
+    for book in books:
+        if book['id'] > max_id:
+            max_id = book['id']
+    return max_id

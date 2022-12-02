@@ -1,5 +1,4 @@
 import pytest
-
 from config_api import *
 from assertpy import assert_that
 from cerberus import Validator
@@ -57,22 +56,29 @@ class TestApi:
         assert_that(validate_book_schema(get_all_books().json()[0])).is_equal_to(True)
         assert_that(get_all_books().json()[0]['name']).is_equal_to("The Russian")
 
-    def test_get_filter_books_correct_parameters(self, validate_book_schema):
-        assert_that(get_filter_books("fiction").status_code).is_equal_to(200)
-        assert_that(validate_book_schema(get_filter_books("fiction").json()[0])).is_equal_to(True)
+    testdata_acceptable_param = [
+        ("fiction", 2),
+        ("fiction", 1),
+        ("non-fiction", 2),
+        ("non-fiction", 1),
+    ]
 
-        book_type = ['fiction', 'non-fiction']
-        for book_type in book_type:
-            books = get_filter_books(book_type).json()
-            for book in books:
-                assert_that(book['type']).is_equal_to(book_type)
+    @pytest.mark.parametrize("book_type, limit", testdata_acceptable_param)
+    def test_get_filter_books_correct_parameters(self, validate_book_schema, book_type, limit):
+        assert_that(get_filter_books(book_type).status_code).is_equal_to(200)
+        assert_that(validate_book_schema(get_filter_books(book_type).json()[0])).is_equal_to(True)
 
-        assert_that(len(get_filter_books("fiction", 1).json())).is_equal_to(1)
-        assert_that(len(get_filter_books("non-fiction", 2).json())).is_equal_to(2)
+        books = get_filter_books(book_type).json()
+        for book in books:
+            assert_that(book['type']).is_equal_to(book_type)
+
+        assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
+        assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
 
     def test_get_a_book_with_available_id(self):
-        assert_that(get_one_book(1).status_code).is_equal_to(200)
-        assert_that(get_one_book(2).json()).contains_key("current-stock", "price")
+        response = get_one_book(1)
+        assert_that(response.status_code).is_equal_to(200)
+        assert_that(response.json()).contains_key("current-stock", "price")
 
 
 
@@ -85,9 +91,14 @@ class TestApi:
                 assert_that(response.json()['created']).is_equal_to(True)
 
     def test_order_an_unavailable_book(self):
-        response = order_a_book(2)
-        assert_that(response.status_code).is_equal_to(404)
-        assert_that(response.json()).contains_value('This book is not in stock. Try again later.')
+        all_books = get_all_books().json()
+        response_order = None
+        for book in all_books:
+            if not book["available"]:
+                response_order = order_a_book(book["id"])
+                break
+        assert_that(response_order.status_code).is_equal_to(404)
+        assert_that(response_order.json()).contains_value('This book is not in stock. Try again later.')
 
     def test_get_all_orders(self, validate_order_schema):
         orders = get_all_orders()
@@ -124,7 +135,7 @@ class TestApi:
         # assert_that(response.content).is_not_empty()
 
     def test_get_a_book_with_unavailable_id(self):
-        book_id = 100
+        book_id = get_biggest_book_id() + 1
         response = get_one_book(book_id)
         assert_that(response.status_code).is_equal_to(404)
         assert_that(response.json()).contains_value(f'No book with id {book_id}')
@@ -132,15 +143,15 @@ class TestApi:
     def test_get_filter_books_incorrect_parameters(self):
         assert_that(get_filter_books("something").status_code).is_equal_to(400)
 
-    def test_get_filter_books_string_limit(self):
+    def test_get_filter_books_string_in_limit_param(self):
         assert_that(get_filter_books("fiction", "something").status_code).is_equal_to(400)
         # limit param accept string format and should not
 
-    def test_order_an_nonexistent_book(self):
-        create_new_user_data()
-        api_authentication()
+    def test_get_filter_books_negative_integer_limit_param(self):
+        assert_that(get_filter_books("fiction", 0).status_code).is_equal_to(400)
 
-        response = order_a_book(75)
+    def test_order_an_nonexistent_book(self):
+        response = order_a_book(get_biggest_book_id() + 1)
         assert_that(response.status_code).is_equal_to(400)
         assert_that(response.json()).contains_value('Invalid or missing bookId.')
 
@@ -148,14 +159,13 @@ class TestApi:
         new_id = "sds45353sda553454"
         order_id = get_all_orders().json()[0]['id']
         response = change_order_data(order_id, "id", new_id)
-
         if response.status_code < 205:
-            assert_that(get_a_specific_order(new_id).json()).contains_key("id")
+            assert_that(get_a_specific_order(new_id).json()).contains_value("sds45353sda553454")
         elif 400 <= response.status_code < 405:
             assert_that(response.json()).contains_key('error')
         # this should receive a 4xx status, receive 204 no response, but the order with new_id can't be found
 
-    def test_change_order_quantity(self, make_orders):
+    def test_try_change_order_quantity(self, make_orders):
         new_quantity = 4
         order_id = get_all_orders().json()[0]['id']
         response = change_order_data(order_id, "quantity", new_quantity)
@@ -233,3 +243,4 @@ class TestApi:
         response = api_authentication()
         assert_that(response.status_code).is_equal_to(409)
         assert_that(response.json()).contains_value('API client already registered. Try a different email.')
+
