@@ -5,8 +5,8 @@ from pathlib import Path
 
 BASE_URL = "https://simple-books-api.glitch.me"
 CURRENT_DIR = str(Path.cwd())
-PATH_TO_ACCESS_TOKEN = (CURRENT_DIR + '\\access_token.txt').replace('\TestCase', "")
-PATH_TO_USER_DATA = (CURRENT_DIR + '\\current_user_data.txt').replace('\TestCase', "")
+PATH_TO_ACCESS_TOKEN = (CURRENT_DIR + '\\access_token.txt').replace('\TestCase', "\\UserData")
+PATH_TO_USER_DATA = (CURRENT_DIR + '\\current_user_data.txt').replace('\TestCase', "\\UserData")
 
 
 def api_status():
@@ -200,6 +200,3 @@ def get_biggest_book_id():
         if book['id'] > max_id:
             max_id = book['id']
     return max_id
-
-if __name__ == '__main__':
-    pass
