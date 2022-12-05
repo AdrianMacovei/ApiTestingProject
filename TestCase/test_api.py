@@ -201,7 +201,7 @@ class TestApi:
         current_number_of_orders = len(get_all_orders().json())
 
         for _ in range(1, book_stock + 1):
-           order_a_book(1)
+            order_a_book(1)
 
         response = order_a_book(1)
         assert_that(len(get_all_orders().json())).is_equal_to(current_number_of_orders + book_stock + 1)
@@ -224,7 +224,6 @@ class TestApi:
         resp = authenticate(3424, f"something{random}@gmail.com")
         assert_that(resp.status_code).is_equal_to(400)
         # name should be only string format but accept integer format too
-
 
     def test_get_all_orders_no_auth_token(self, rollback_auth_token):
         delete_token()
