@@ -1,6 +1,5 @@
 import requests
 import json
-# from assertpy import assert_that
 from random import randint
 from pathlib import Path
 
