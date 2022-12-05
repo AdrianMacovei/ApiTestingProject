@@ -70,6 +70,20 @@ In this project, I create a number of 36 tests that test different functionality
 Based on the test result I can make the following recommendations for developers of the API to increase the quality of the product:
 
 - When sending a get request to the endpoint /books with limit 0 and string value in it the API accepts the values and return all books available. There 
-in my opinion, will be better a 4xx response with the return message error "Invalid limit parameter"
+  in my opinion, will be better a 4xx response with the return message error "Invalid limit value".
+
+- I tried to change an order attribute id and quantity using a patch request to the endpoint /orders/order_id and the response status code was 204 No content
+  the same status code was used to delete the order request and change the customer name of the order. In my opinion, the code should be different because the last two   mentioned (delete and change customer name) make a change in the database but the first two (change quantity and id) don't (value remain the same after I tried to     change it). 
+  A recommendation is for all the attributes of order that can't be modified to return a 4xx code with some error message. Even for the delete and customer name update 
+  will be great to return some content that informs the person who uses the API that his request makes the change in the data (ex: {"status":"order deleted"} or
+  {"status":"customer name updated"}).
+
+  
+- Now the order quantity attribute can't be changed but will be a good update for the API if in the future will offer this possibility after that an order can contain   for example more than one book of the same type.
+  
+- Tried to test if ordering more than the available number of a book will activate some error message and I find that the server doesn’t update the book quantity accordingly with the number of orders for the book. This can be disastrous for a business for example because will go to a situation when the client’s order can’t be honoured just because the stock is not updated properly. The recommendation is to make the server update the book quantity accordingly with the number of orders and to change the value of the attribute available to False when the stock reaches the value of zero.
+  
+- Finally, I find that in the authentication part the API accepts integer data type in the customer name, can be a good practice if will be changed to accept only string data type.
+  
 
 
