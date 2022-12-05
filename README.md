@@ -20,3 +20,16 @@ To run the collection need to:
 - Open Postman
 
 - Follow steps in video: https://www.awesomescreenshot.com/video/13024595
+
+
+## Simple Book API testing with Python/Requests
+
+### Prerequisites
+To run the Python code need to:
+- install python on you laptop/pc https://www.python.org/downloads/
+- install Pycharm https://www.jetbrains.com/pycharm/download/#section=windows Community or other IDE (ex Visual Studio Code)
+- install git (link bellow)
+
+### Run test in IDE with steps bellow:
+- Create a folder for the project
+- 
