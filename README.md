@@ -8,7 +8,9 @@ In the current project I test the Simple Book API using two different approach:
 ## Simple Book API testing with  Postman
 
 ### Prerequisites
-To run the collection need to install first the Postman application from https://www.postman.com/downloads/
+To run the collection need to:
+- install first the Postman application from https://www.postman.com/downloads/
+- install git from https://gitforwindows.org
 
 ### Run the test in the Postman collection with steps billow:
 - Create a folder for this project
