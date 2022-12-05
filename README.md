@@ -33,3 +33,9 @@ To run the Python code need to:
 - Create a folder for the project and clone the repo (see in video above)
 - Follow the steps in the video to run the test: https://youtu.be/IxDJ50V3ZWM 
 - If want to create html report run next command in the terminal `pytest --html=report.html --self-contained-html`
+
+### Tests results
+
+In this project, I create a number of 36 tests that test different functionality of the API. Form the total number 6 failed and 30 passed.
+Based on the test result I can make the following recommendations for developers of the API to increase the quality of the product:
+
