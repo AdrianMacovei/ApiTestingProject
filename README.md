@@ -19,4 +19,4 @@ To run the collection need to:
 
 - Open Postman
 
-- Follow steps in video: https://www.awesomescreenshot.com/video/12390646?key=22d47d84f70fd001be75039dcbe7fb23
+- Follow steps in video: https://www.awesomescreenshot.com/video/13024595
