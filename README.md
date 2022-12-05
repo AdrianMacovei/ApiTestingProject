@@ -64,6 +64,12 @@ To run the Python code need to:
 - Follow the steps in the video to run the test: https://youtu.be/IxDJ50V3ZWM 
 - If want to create html report run next command in the terminal `pytest --html=report.html --self-contained-html`
 
+### Project structure
+ API testing with Python and requests has two main parts:
+-	TestCase folder where is the api_methods_config file that handles all the possible action that we can make on the API and api_test file is the host file for all the test in the project.
+-	UserData folder has two .txt files that are connected to the api_methods_config and help to save the data on disk (persistence), data like authentication toke and current user data (name and email).
+
+
 ### Tests results
 
 In this project, I create a number of 37 tests that test different functionality of the API. Form the total number 6 failed and 30 passed.
