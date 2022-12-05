@@ -66,7 +66,7 @@ To run the Python code need to:
 
 ### Tests results
 
-In this project, I create a number of 36 tests that test different functionality of the API. Form the total number 6 failed and 30 passed.
+In this project, I create a number of 37 tests that test different functionality of the API. Form the total number 6 failed and 30 passed.
 Based on the test result I can make the following recommendations for developers of the API to increase the quality of the product:
 
 - When sending a get request to the endpoint /books with limit 0 and string value in it the API accepts the values and return all books available. There 
