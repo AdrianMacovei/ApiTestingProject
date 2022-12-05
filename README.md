@@ -28,8 +28,8 @@ To run the collection need to:
 To run the Python code need to:
 - install python on you laptop/pc https://www.python.org/downloads/
 - install Pycharm https://www.jetbrains.com/pycharm/download/#section=windows Community or other IDE (ex Visual Studio Code)
-- install git (link bellow)
+- install git (link above)
 
 ### Run test in IDE with steps bellow:
-- Create a folder for the project
-- 
+- Create a folder for the project and clone the repo (see in video above)
+- Follow the steps in the video to run the test https://www.awesomescreenshot.com/video/13024899 
