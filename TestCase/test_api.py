@@ -149,15 +149,21 @@ class TestApi:
         assert_that(response.status_code).is_equal_to(404)
         assert_that(response.json()).contains_value(f'No book with id {book_id}')
 
-    def test_get_filter_books_incorrect_parameters(self):
+    def test_get_filter_books_incorrect_type_parameter(self):
         assert_that(get_filter_books("something").status_code).is_equal_to(400)
+    limit_param_data = [
+                ("fiction", "something"),
+                ("fiction", -1),
+                ("non-fiction", 0)
+            ]
 
-    def test_get_filter_books_string_in_limit_param(self):
-        assert_that(get_filter_books("fiction", "something").status_code).is_equal_to(400)
-        # limit param accept string format and should not
-
-    def test_get_filter_books_negative_integer_limit_param(self):
-        assert_that(get_filter_books("fiction", 0).status_code).is_equal_to(400)
+    @pytest.mark.parametrize("book_type, limit", limit_param_data)
+    def test_get_filter_books_string_in_limit_param(self, book_type, limit):
+        response = get_filter_books(book_type, limit)
+        if limit == 0 and response.status_code == 200:
+            assert_that(response.json()).is_empty()
+        assert_that(response.status_code).is_equal_to(400)
+        # limit param accept string format and should not, accept value 0 but return all books available
 
     def test_order_an_nonexistent_book(self):
         response = order_a_book(get_biggest_book_id() + 1)
