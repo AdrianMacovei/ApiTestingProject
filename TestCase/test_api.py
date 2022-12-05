@@ -11,7 +11,6 @@ class TestApi:
     ORDER_SCHEMA = dict(id={'type': 'string'}, bookId={'type': "integer"}, customerName={'type': 'string'},
                         createdBy={'type': 'string'}, quantity={'type': 'integer'}, timestamp={'type': 'integer'})
 
-
     @pytest.fixture
     def validate_book_schema(self):
         v = Validator(TestApi.BOOK_SCHEMA)
@@ -38,7 +37,6 @@ class TestApi:
     def make_orders(self):
         for _ in range(3):
             order_a_book(3)
-
 
     def test_api_initial_status(self):
         assert_that(api_status().status_code).is_equal_to(200)
@@ -78,11 +76,11 @@ class TestApi:
         assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
 
     testdata_get_book = [(1, 'The Russian'),
-                         (2,'Just as I Am'),
+                         (2, 'Just as I Am'),
                          (3, 'The Vanishing Half'),
-                         (4,'The Midnight Library'),
-                         (5,'Untamed'),
-                         (6,'Viscount Who Loved Me'),
+                         (4, 'The Midnight Library'),
+                         (5, 'Untamed'),
+                         (6, 'Viscount Who Loved Me'),
                          ]
 
     @pytest.mark.parametrize("book_id, book_name", testdata_get_book)
@@ -92,9 +90,6 @@ class TestApi:
         assert_that(response.json()).contains_key("current-stock", "price")
         assert_that(response.json()["id"]).is_equal_to(book_id)
         assert_that(response.json()["name"]).is_equal_to(book_name)
-
-
-
 
     def test_order_available_book(self):
         all_books = get_all_books().json()
