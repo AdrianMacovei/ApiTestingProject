@@ -252,4 +252,3 @@ class TestApi:
         response = api_authentication()
         assert_that(response.status_code).is_equal_to(409)
         assert_that(response.json()).contains_value('API client already registered. Try a different email.')
-
