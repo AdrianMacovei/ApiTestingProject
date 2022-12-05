@@ -1,5 +1,5 @@
 import pytest
-from config_api import *
+from config_api_methods import *
 from assertpy import assert_that
 from cerberus import Validator
 
@@ -52,9 +52,11 @@ class TestApi:
         assert_that(response.json()).contains_key("accessToken")
 
     def test_get_all_books_response(self, validate_book_schema):
-        assert_that(get_all_books().status_code).is_equal_to(200)
-        assert_that(validate_book_schema(get_all_books().json()[0])).is_equal_to(True)
-        assert_that(get_all_books().json()[0]['name']).is_equal_to("The Russian")
+        response = get_all_books()
+        print(response.json())
+        assert_that(response.status_code).is_equal_to(200)
+        assert_that(validate_book_schema(response.json()[0])).is_equal_to(True)
+        assert_that(response.json()[0]['name']).is_equal_to("The Russian")
 
     testdata_acceptable_param = [
         ("fiction", 2),
@@ -75,10 +77,22 @@ class TestApi:
         assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
         assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
 
-    def test_get_a_book_with_available_id(self):
-        response = get_one_book(1)
+    testdata_get_book = [(1, 'The Russian'),
+                         (2,'Just as I Am'),
+                         (3, 'The Vanishing Half'),
+                         (4,'The Midnight Library'),
+                         (5,'Untamed'),
+                         (6,'Viscount Who Loved Me'),
+                         ]
+
+    @pytest.mark.parametrize("book_id, book_name", testdata_get_book)
+    def test_get_a_book_with_available_id(self, book_id, book_name):
+        response = get_one_book(book_id)
         assert_that(response.status_code).is_equal_to(200)
         assert_that(response.json()).contains_key("current-stock", "price")
+        assert_that(response.json()["id"]).is_equal_to(book_id)
+        assert_that(response.json()["name"]).is_equal_to(book_name)
+
 
 
 
