@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "77d63b7a-61af-4507-8953-d2c0456081ee",
+		"_postman_id": "0288f61d-17cd-461c-99e3-ca9a7e6f9110",
 		"name": "API  Simple Book",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "24263414"
@@ -173,7 +173,8 @@
 							"\r",
 							"pm.test(\"Is in stock\", () => {\r",
 							"    pm.expect(stock).to.be.above(0);\r",
-							"})"
+							"})\r",
+							""
 						],
 						"type": "text/javascript"
 					}
@@ -212,6 +213,58 @@
 			"response": []
 		},
 		{
+			"name": "Authentication",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response\r",
+							"\r",
+							"let token = response.json()[\"accessToken\"]\r",
+							"\r",
+							"\r",
+							"pm.collectionVariables.set(\"accessToken\", token);\r",
+							"\r",
+							"\r",
+							"pm.test(\"Status code is 201\", () => {\r",
+							"    response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"clientName\": \"Adrian\",\r\n   \"clientEmail\": \"adrianmacovei{{$timestamp}}@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api-clients",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api-clients"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Order book",
 			"event": [
 				{
@@ -236,7 +289,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{access_token}}",
+							"value": "{{accessToken}}",
 							"type": "string"
 						}
 					]
@@ -285,7 +338,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{access_token}}",
+							"value": "{{accessToken}}",
 							"type": "string"
 						}
 					]
@@ -337,7 +390,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{access_token}}",
+							"value": "{{accessToken}}",
 							"type": "string"
 						}
 					]
@@ -389,7 +442,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{access_token}}",
+							"value": "{{accessToken}}",
 							"type": "string"
 						}
 					]
@@ -445,7 +498,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{access_token}}",
+							"value": "{{accessToken}}",
 							"type": "string"
 						}
 					]
@@ -504,7 +557,7 @@
 					"bearer": [
 						{
 							"key": "token",
-							"value": "{{access_token}}",
+							"value": "{{accessToken}}",
 							"type": "string"
 						}
 					]
@@ -538,47 +591,18 @@
 				}
 			},
 			"response": []
-		},
-		{
-			"name": "Authentication",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test(\"Status code is 201\", () => {\r",
-							"    pm.response.to.have.status(201);\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n   \"clientName\": \"Adrian\",\r\n   \"clientEmail\": \"adrianmacovei17@gmail.com\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{base_url}}/api-clients",
-					"host": [
-						"{{base_url}}"
-					],
-					"path": [
-						"api-clients"
-					]
-				}
-			},
-			"response": []
 		}
 	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -602,12 +626,12 @@
 	"variable": [
 		{
 			"key": "base_url",
-			"value": "https://simple-books-api.glitch.me"
+			"value": "https://simple-books-api.glitch.me",
+			"type": "string"
 		},
 		{
-			"key": "access_token",
-			"value": "09ffede59b1e9d561678a48081fbd7cd607501ec4a96bb7b824d2ca4430c3bc9",
-			"type": "string"
+			"key": "accessToken",
+			"value": ""
 		}
 	]
 }
