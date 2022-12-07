@@ -158,7 +158,7 @@ class TestApi:
             ]
 
     @pytest.mark.parametrize("book_type, limit", limit_param_data)
-    def test_get_filter_books_string_in_limit_param(self, book_type, limit):
+    def test_get_filter_books_invalid_data_in_limit_param(self, book_type, limit):
         response = get_filter_books(book_type, limit)
         if limit == 0 and response.status_code == 200:
             assert_that(response.json()).is_empty()
