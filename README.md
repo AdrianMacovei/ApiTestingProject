@@ -45,7 +45,7 @@ To run the collection need to:
 ### Run the test in the Postman collection with steps billow:
 - Create a folder for this project
 
-- Clone the repo on your divice using in cmd git clone https://github.com/AdrianMacovei/API-Testing-Project
+- Clone the repo on your divice using in terminal command `git clone https://github.com/AdrianMacovei/API-Testing-Project`
 
 - Open Postman
 
