@@ -1,7 +1,7 @@
 import pytest
 from assertpy import assert_that
 from cerberus import Validator
-from ApiMethodsAndData.config_api_methods import *
+from TestCase.ApiMethodsAndData.config_api_methods import *
 
 
 class TestApi:
@@ -149,13 +149,10 @@ class TestApi:
         assert_that(response.status_code).is_equal_to(404)
         assert_that(response.json()).contains_value(f'No book with id {book_id}')
 
-    def test_get_filter_books_incorrect_type_parameter(self):
-        assert_that(get_filter_books("something").status_code).is_equal_to(400)
-    limit_param_data = [
-                ("fiction", "something"),
-                ("fiction", -1),
-                ("non-fiction", 0)
-            ]
+    limit_param_data = (
+        ("fiction", "something"),
+        ("fiction", -1),
+        ("non-fiction", 0))
 
     @pytest.mark.parametrize("book_type, limit", limit_param_data)
     def test_get_filter_books_invalid_data_in_limit_param(self, book_type, limit):
