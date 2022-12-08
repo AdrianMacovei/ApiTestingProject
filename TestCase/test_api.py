@@ -1,7 +1,7 @@
 import pytest
 from assertpy import assert_that
 from cerberus import Validator
-from TestCase.ApiMethodsAndData.config_api_methods import *
+from ApiMethodsAndData.config_api_methods import *
 
 
 class TestApi:
