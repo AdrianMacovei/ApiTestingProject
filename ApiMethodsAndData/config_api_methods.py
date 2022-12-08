@@ -5,9 +5,8 @@ from pathlib import Path
 
 BASE_URL = "https://simple-books-api.glitch.me"
 CURRENT_DIR = str(Path.cwd())
-PATH_TO_ACCESS_TOKEN = (CURRENT_DIR + '\\access_token.txt').replace('\TestCase', "\\UserData")
-PATH_TO_USER_DATA = (CURRENT_DIR + '\\current_user_data.txt').replace('\TestCase', "\\UserData")
-
+PATH_TO_ACCESS_TOKEN = CURRENT_DIR + '\\ApiMethodsAndData\\access_token.txt'
+PATH_TO_USER_DATA = CURRENT_DIR + '\\ApiMethodsAndData\\current_user_data.txt'
 
 def api_status():
     """Returns the request response for get api status"""

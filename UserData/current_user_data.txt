@@ -1,4 +1,0 @@
-{
-    "clientName": "Adrian7537",
-    "clientEmail": "adrianmacovei7537@gmail.com"
-}
