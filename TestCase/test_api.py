@@ -1,7 +1,7 @@
 import pytest
 from assertpy import assert_that
 from cerberus import Validator
-from ApiMethodsAndData.config_api_methods import *
+from UserDataAndApiMethods.config_api_methods import *
 
 
 class TestApi:
@@ -51,7 +51,6 @@ class TestApi:
 
     def test_get_all_books_response(self, validate_book_schema):
         response = get_all_books()
-        print(response.json())
         assert_that(response.status_code).is_equal_to(200)
         assert_that(validate_book_schema(response.json()[0])).is_equal_to(True)
         assert_that(response.json()[0]['name']).is_equal_to("The Russian")
