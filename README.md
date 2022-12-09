@@ -61,7 +61,7 @@ To run the Python code need to:
 
 ### Run test in IDE with steps bellow:
 - Create a folder for the project and clone the repo (see in video above)
-- Follow the steps in the video to run the test: https://youtu.be/IxDJ50V3ZWM 
+- Follow the steps in the video to run the test: https://youtu.be/qL8Bt_58wcw
 - If want to create html report run next command in the terminal `pytest --html=report.html --self-contained-html`
 
 ### Project structure
