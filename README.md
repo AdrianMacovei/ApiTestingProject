@@ -66,8 +66,8 @@ To run the Python code need to:
 
 ### Project structure
  API testing with Python and requests has two main parts:
--	TestCase folder where is the api_methods_config file that handles all the possible action that we can make on the API and api_test file is the host file for all the test in the project.
--	UserData folder has two .txt files that are connected to the api_methods_config and help to save the data on disk (persistence), data like authentication toke and current user data (name and email).
+-	TestCase folder where is the api_test.py file that is the host file for all the test in the project.
+-	UserDataAndApiMethods folder has two .txt files that are connected to the api_methods_config and help to save the data on disk (persistence), data like authentication toke and current user data (name and email).
 
 
 ### Tests results
