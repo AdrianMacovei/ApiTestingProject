@@ -91,6 +91,6 @@ Based on the test result I can make the following recommendations for developers
   
 - Finally, I find that in the authentication part the API accepts integer data type in the customer name, can be a good practice if will be changed to accept only string data type.
   
-![alt text](https://github.com/AdrianMacovei/data-and-images-for-my-repos/blob/main/report-html%20(4).png)
+![alt text](https://github.com/AdrianMacovei/data-and-images-for-my-repos/blob/main/report-html%20(5).png)
 
 
