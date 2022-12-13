@@ -61,18 +61,18 @@ To run the Python code need to:
 
 ### Run test in IDE with steps bellow:
 - Create a folder for the project and clone the repo (see in video above)
-- Follow the steps in the video to run the test: https://youtu.be/IxDJ50V3ZWM 
+- Follow the steps in the video to run the test: https://youtu.be/qL8Bt_58wcw
 - If want to create html report run next command in the terminal `pytest --html=report.html --self-contained-html`
 
 ### Project structure
  API testing with Python and requests has two main parts:
--	TestCase folder where is the api_methods_config file that handles all the possible action that we can make on the API and api_test file is the host file for all the test in the project.
--	UserData folder has two .txt files that are connected to the api_methods_config and help to save the data on disk (persistence), data like authentication toke and current user data (name and email).
+-	TestCase folder where is the api_test.py file that is the host file for all the test in the project.
+-	UserDataAndApiMethods folder has two .txt files that are connected to the api_methods_config and help to save the data on disk (persistence), data like authentication toke and current user data (name and email).
 
 
 ### Tests results
 
-In this project, I create a number of 37 tests that test different functionality of the API. Form the total number 6 failed and 30 passed.
+In this project, I create a number of 36 tests that test different functionality of the API. Form the total number 6 failed and 30 passed.
 Based on the test result I can make the following recommendations for developers of the API to increase the quality of the product:
 
 - When sending a get request to the endpoint /books with limit 0 and string value in it the API accepts the values and return all books available. There 
@@ -91,6 +91,6 @@ Based on the test result I can make the following recommendations for developers
   
 - Finally, I find that in the authentication part the API accepts integer data type in the customer name, can be a good practice if will be changed to accept only string data type.
   
-![alt text](https://github.com/AdrianMacovei/data-and-images-for-my-repos/blob/main/report-html%20(4).png)
+![alt text](https://github.com/AdrianMacovei/data-and-images-for-my-repos/blob/main/report-html%20(5).png)
 
 
