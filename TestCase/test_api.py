@@ -39,8 +39,9 @@ class TestApi:
             order_a_book(3)
 
     def test_api_initial_status(self):
-        assert_that(api_status().status_code).is_equal_to(200)
-        assert_that(api_status().json()['status']).is_equal_to('OK')
+        response = get_api_status()
+        assert_that(response.status_code).is_equal_to(200)
+        assert_that(response.json()['status']).is_equal_to('OK')
 
     def test_api_authentication_with_new_user_data(self):
         create_new_user_data()
@@ -71,7 +72,6 @@ class TestApi:
         for book in books:
             assert_that(book['type']).is_equal_to(book_type)
 
-        assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
         assert_that(len(get_filter_books(book_type, limit).json())).is_equal_to(limit)
 
     testdata_get_book = [(1, 'The Russian'),
@@ -216,7 +216,7 @@ class TestApi:
         assert_that(response.status_code).is_equal_to(404)
 
     def test_authentication_with_invalid_email_format(self):
-        resp = authenticate("Bogdan", "sfsdafsa")
+        resp = authenticate("Bogdan", "something")
 
         assert_that(resp.status_code).is_equal_to(400)
         assert_that(resp.json()).contains_value('Invalid or missing client email.')

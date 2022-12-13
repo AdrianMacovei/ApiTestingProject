@@ -9,7 +9,7 @@ PATH_TO_ACCESS_TOKEN = CURRENT_DIR.replace("\\TestCase", "\\UserDataAndApiMethod
 PATH_TO_USER_DATA = CURRENT_DIR.replace("\\TestCase", "\\UserDataAndApiMethods\\current_user_data.txt")
 
 
-def api_status():
+def get_api_status():
     """Returns the request response for get api status"""
     response_status_api = requests.get(f"{BASE_URL}/status")
     return response_status_api
