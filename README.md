@@ -50,6 +50,7 @@ To run the collection need to:
 - Open Postman
 
 - Follow steps in video: https://youtu.be/k31uzXQ7Dhw
+[![Watch the video](https://i.imgur.com/vKb2F1B.png)](https://youtu.be/k31uzXQ7Dhw)
 
 ## Simple Book API testing with Python/Requests
 
