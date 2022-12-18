@@ -49,7 +49,7 @@ To run the collection need to:
 
 - Open Postman
 
-- Follow steps in video: https://youtu.be/k31uzXQ7Dhw
+- Follow steps in video:
 [![Postman video](https://github.com/AdrianMacovei/data-and-images-for-my-repos/blob/main/-182-Run-Postman-Collection-YouTube.png)](https://youtu.be/k31uzXQ7Dhw)
 
 ## Simple Book API testing with Python/Requests
