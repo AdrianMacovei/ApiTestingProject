@@ -50,7 +50,7 @@ To run the collection need to:
 - Open Postman
 
 - Follow steps in video: https://youtu.be/k31uzXQ7Dhw
-[![Watch the video](https://img.youtube.com/vi/T-D1KVIuvjA/maxresdefault.jpg)](https://youtu.be/k31uzXQ7Dhw)
+[![Demo CountPages alpha](https://share.gifyoutube.com/KzB6Gb.gif)](https://youtu.be/k31uzXQ7Dhw)
 
 ## Simple Book API testing with Python/Requests
 
